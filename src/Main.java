@@ -1,5 +1,7 @@
 import graphics.Window;
 
+import java.awt.geom.Point2D;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -18,6 +20,9 @@ public class Main {
 
             while (!window.closed()) {
                 window.clear();
+
+                Point2D.Float mousePosition = window.getMousePosition();
+                System.out.println(mousePosition.x + ", " + mousePosition.y);
 
                 glBegin(GL_QUADS);
                 glVertex2f(-0.5f, -0.5f);
