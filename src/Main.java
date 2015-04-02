@@ -1,4 +1,5 @@
 import graphics.Window;
+import maths.vec4;
 
 import java.awt.geom.Point2D;
 
@@ -18,11 +19,15 @@ public class Main {
             int vao = glGenVertexArrays();
             glBindVertexArray(vao);
 
+            vec4 a = new vec4(0.2f, 0.3f, 0.8f, 1.0f);
+            vec4 b = new vec4(0.5f, 0.2f, 0.1f, 1.0f);
+
+            vec4 c = a.multiply(b);
+
             while (!window.closed()) {
                 window.clear();
 
-                Point2D.Float mousePosition = window.getMousePosition();
-                System.out.println(mousePosition.x + ", " + mousePosition.y);
+                System.out.println(c);
 
                 glBegin(GL_QUADS);
                 glVertex2f(-0.5f, -0.5f);
