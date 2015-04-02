@@ -44,6 +44,7 @@ public class Window {
         });
 
         GLContext.createFromCurrent();
+        System.out.println("OpenGL" + glGetString(GL_VERSION));
 
         return true;
     }
