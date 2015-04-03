@@ -4,8 +4,6 @@ import utils.BufferUtils;
 
 import static org.lwjgl.opengl.GL15.*;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 public class Buffer {
 
     private int m_BufferID, m_ComponentCount;
@@ -17,6 +15,10 @@ public class Buffer {
         glBindBuffer(GL_ARRAY_BUFFER, m_BufferID);
         glBufferData(GL_ARRAY_BUFFER, BufferUtils.toFloatBuffer(data), GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    public void dispose() {
+        glDeleteBuffers(m_BufferID);
     }
 
     public void bind() {

@@ -17,6 +17,10 @@ public class IndexBuffer {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
+    public void dispose() {
+        glDeleteBuffers(m_BufferID);
+    }
+
     public void bind() {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_BufferID);
     }

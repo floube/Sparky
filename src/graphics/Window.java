@@ -6,12 +6,11 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GLContext;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
@@ -79,6 +78,7 @@ public class Window {
                 my = (float)ypos;
             }
         });
+        glfwSwapInterval(0);
 
         GLContext.createFromCurrent();
         System.out.println("OpenGL" + glGetString(GL_VERSION));
@@ -110,6 +110,11 @@ public class Window {
 
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    public void setTitle(String title) {
+        m_Title = title;
+        glfwSetWindowTitle(m_Window, title);
     }
 
     public void update() {

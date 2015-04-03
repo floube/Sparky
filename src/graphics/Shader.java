@@ -6,9 +6,7 @@ import maths.vec3;
 import maths.vec4;
 import utils.FileUtils;
 
-import java.nio.FloatBuffer;
-
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
@@ -65,6 +63,10 @@ public class Shader {
         glDeleteShader(fragment);
 
         return program;
+    }
+
+    public void dispose() {
+        glDeleteProgram(m_ShaderID);
     }
 
     private int getUniformLocation(String name) {

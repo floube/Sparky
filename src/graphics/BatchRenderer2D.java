@@ -5,19 +5,20 @@ import maths.vec2;
 import maths.vec3;
 import maths.vec4;
 
-import java.awt.geom.Point2D;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class BatchRenderer2D implements Renderer2D {
 
     public final static int RENDERER_MAX_SPRITES    = 60000;
-    public final static int RENDERER_VERTEX_SIZE    = (3 * 4) + (4 * 4);
+    public final static int RENDERER_VERTEX_SIZE    = (3 * 4) + (1 * 4);
     public final static int RENDERER_SPRITE_SIZE    = RENDERER_VERTEX_SIZE * 4;
     public final static int RENDERER_BUFFER_SIZE    = RENDERER_SPRITE_SIZE * RENDERER_MAX_SPRITES;
     public final static int RENDERER_INDICES_SIZE   = RENDERER_MAX_SPRITES * 6;
@@ -35,6 +36,13 @@ public class BatchRenderer2D implements Renderer2D {
         init();
     }
 
+    @Override
+    public void dispose() {
+        m_IBO.dispose();
+        glDeleteVertexArrays(m_VAO);
+        glDeleteBuffers(m_VBO);
+    }
+
     private void init() {
         m_VAO = glGenVertexArrays();
         m_VBO = glGenBuffers();
@@ -45,7 +53,7 @@ public class BatchRenderer2D implements Renderer2D {
         glEnableVertexAttribArray(SHADER_VERTEX_INDEX);
         glEnableVertexAttribArray(SHADER_COLOR_INDEX);
         glVertexAttribPointer(SHADER_VERTEX_INDEX, 3, GL_FLOAT, false, RENDERER_VERTEX_SIZE, 0);
-        glVertexAttribPointer(SHADER_COLOR_INDEX, 4, GL_FLOAT, false, RENDERER_VERTEX_SIZE, 3 * 4);
+        glVertexAttribPointer(SHADER_COLOR_INDEX, 4, GL_UNSIGNED_BYTE, true, RENDERER_VERTEX_SIZE, 3 * 4);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int[] indices = new int[RENDERER_INDICES_SIZE];
@@ -79,17 +87,24 @@ public class BatchRenderer2D implements Renderer2D {
         vec2 size = renderable.getSize();
         vec4 color = renderable.getColor();
 
+        int r = (int) (color.x * 255);
+        int g = (int) (color.y * 255);
+        int b = (int) (color.z * 255);
+        int a = (int) (color.w * 255);
+
+        float c = Float.intBitsToFloat((r << 0) | (g << 8) | (b << 16) | (a << 24));
+
         m_Buffer.put(position.x).put(position.y).put(position.z);
-        m_Buffer.put(color.x).put(color.y).put(color.z).put(color.w);
+        m_Buffer.put(c);
 
         m_Buffer.put(position.x).put(position.y + size.y).put(position.z);
-        m_Buffer.put(color.x).put(color.y).put(color.z).put(color.w);
+        m_Buffer.put(c);
 
         m_Buffer.put(position.x + size.x).put(position.y + size.y).put(position.z);
-        m_Buffer.put(color.x).put(color.y).put(color.z).put(color.w);
+        m_Buffer.put(c);
 
         m_Buffer.put(position.x + size.x).put(position.y).put(position.z);
-        m_Buffer.put(color.x).put(color.y).put(color.z).put(color.w);
+        m_Buffer.put(c);
 
         m_IndexCount += 6;
     }

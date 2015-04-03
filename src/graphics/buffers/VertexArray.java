@@ -1,18 +1,29 @@
 package graphics.buffers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 
 public class VertexArray {
 
     private int m_ArrayID;
-    private Vector<Buffer> m_Buffers;
+    private List<Buffer> m_Buffers = new ArrayList<>();
 
     public VertexArray() {
         m_ArrayID = glGenVertexArrays();
+    }
+
+    public void dispose() {
+        for (Buffer buffer : m_Buffers) {
+            buffer.dispose();
+        }
+
+        glDeleteVertexArrays(m_ArrayID);
     }
 
     public void addBuffer(Buffer buffer, int index) {
@@ -24,6 +35,8 @@ public class VertexArray {
 
         buffer.unbind();
         unbind();
+
+        m_Buffers.add(buffer);
     }
 
     public void bind() {

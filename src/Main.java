@@ -1,24 +1,15 @@
 import graphics.*;
-import graphics.buffers.Buffer;
-import graphics.buffers.IndexBuffer;
-import graphics.buffers.VertexArray;
 import maths.mat4;
 import maths.vec2;
 import maths.vec3;
 import maths.vec4;
-import utils.BufferUtils;
 
 import java.awt.geom.Point2D;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class Main {
 
@@ -33,7 +24,7 @@ public class Main {
             shader.enable();
             shader.setUniformMat4("pr_matrix", ortho);
 
-            Vector<Renderable2D> sprites = new Vector<>();
+            List<Renderable2D> sprites = new ArrayList<>();
             Random rand = new Random();
 
             for (float y = 0; y < 9.0f; y += 0.05f) {
@@ -42,12 +33,22 @@ public class Main {
                 }
             }
 
+            int size = sprites.size();
+
             BatchRenderer2D renderer = new BatchRenderer2D();
 
             shader.setUniform2f("light_pos", new vec2(4.0f, 1.5f));
             shader.setUniform4f("colour", new vec4(0.2f, 0.3f, 0.8f, 1.0f));
 
+            long start = System.currentTimeMillis(), lastTime = System.currentTimeMillis();
+            int frames = 0;
+
             while (!window.closed()) {
+                mat4 mat = mat4.translation(new vec3(5, 5, 5));
+                mat = mat.multiply(mat4.rotation((System.currentTimeMillis() - start) / 10, new vec3(0, 0, 1)));
+                mat = mat.multiply(mat4.translation(new vec3(-5, -5, -5)));
+                shader.setUniformMat4("ml_matrix", mat);
+
                 window.clear();
 
                 Point2D.Float mousePosition = window.getMousePosition();
@@ -55,16 +56,26 @@ public class Main {
 
                 renderer.begin();
 
-                for (int i = 0; i < sprites.size(); i++) {
+                for (int i = 0; i < size; i++) {
                     renderer.submit(sprites.get(i));
                 }
 
                 renderer.end();
                 renderer.flush();
 
+                frames++;
+
+                if (System.currentTimeMillis() - lastTime >= 1000) {
+                    lastTime += 1000;
+                    window.setTitle("Sparky: Java Edition! - " + frames + " FPS");
+                    frames = 0;
+                }
+
                 window.update();
             }
 
+            shader.dispose();
+            renderer.dispose();
             window.destroy();
         } finally {
             glfwTerminate();

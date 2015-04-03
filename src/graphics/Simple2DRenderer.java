@@ -3,13 +3,20 @@ package graphics;
 import maths.mat4;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class Simple2DRenderer implements Renderer2D {
 
     private ArrayDeque<StaticSprite> m_RenderQueue = new ArrayDeque<>();
+
+    @Override
+    public void dispose() {
+        while (!m_RenderQueue.isEmpty()) {
+            StaticSprite sprite = m_RenderQueue.pollFirst();
+            sprite.dispose();
+        }
+    }
 
     @Override
     public void submit(Renderable2D renderable) {
@@ -19,7 +26,7 @@ public class Simple2DRenderer implements Renderer2D {
     @Override
     public void flush() {
         while (!m_RenderQueue.isEmpty()) {
-            StaticSprite sprite = m_RenderQueue.getFirst();
+            StaticSprite sprite = m_RenderQueue.pollFirst();
             sprite.getVAO().bind();
             sprite.getIBO().bind();
 
@@ -28,8 +35,6 @@ public class Simple2DRenderer implements Renderer2D {
 
             sprite.getIBO().unbind();
             sprite.getVAO().unbind();
-
-            m_RenderQueue.removeFirst();
         }
     }
 

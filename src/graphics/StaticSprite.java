@@ -42,6 +42,11 @@ public class StaticSprite extends Renderable2D {
         m_IndexBuffer = new IndexBuffer(indices, 6);
     }
 
+    public void dispose() {
+        m_VertexArray.dispose();
+        m_IndexBuffer.dispose();
+    }
+
     public VertexArray getVAO() {
         return m_VertexArray;
     }

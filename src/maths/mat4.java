@@ -26,14 +26,20 @@ public class mat4 {
     }
 
     public mat4 multiply(mat4 other) {
+        float[] data = new float[4 * 4];
+
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
                 float sum = 0.0f;
                 for (int e = 0; e < 4; e++) {
                     sum += elements[x + e * 4] * other.elements[e + y * 4];
                 }
-                elements[x + y * 4] = sum;
+                data[x + y * 4] = sum;
             }
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            elements[i] = data[i];
         }
 
         return this;

@@ -1,8 +1,5 @@
 package graphics;
 
-import graphics.buffers.Buffer;
-import graphics.buffers.IndexBuffer;
-import graphics.buffers.VertexArray;
 import maths.vec2;
 import maths.vec3;
 import maths.vec4;
