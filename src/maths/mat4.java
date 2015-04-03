@@ -1,5 +1,9 @@
 package maths;
 
+import utils.BufferUtils;
+
+import java.nio.FloatBuffer;
+
 public class mat4 {
 
     public float[] elements = new float[4 * 4];
@@ -38,6 +42,10 @@ public class mat4 {
     public vec4 getColumn(int index) {
         index *= 4;
         return new vec4(elements[index], elements[index + 1], elements[index + 2], elements[index + 3]);
+    }
+
+    public FloatBuffer getBuffer() {
+        return BufferUtils.toFloatBuffer(elements);
     }
 
     public static mat4 identity() {

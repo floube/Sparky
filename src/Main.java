@@ -1,13 +1,18 @@
+import graphics.Shader;
 import graphics.Window;
 import maths.mat4;
+import maths.vec2;
 import maths.vec3;
 import maths.vec4;
+import utils.BufferUtils;
 
 import java.awt.geom.Point2D;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL20.*;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -16,38 +21,39 @@ public class Main {
     public static void main(String[] args) {
         try {
             Window window = new Window("Sparky: Java Edition!", 960, 540);
-            glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
+//            glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 
-            int vao = glGenVertexArrays();
-            glBindVertexArray(vao);
+            float[] vertices = new float[] {
+                    0, 0, 0,
+                    8, 0, 0,
+                    0, 3, 0,
+                    0, 3, 0,
+                    8, 3, 0,
+                    8, 0, 0
+            };
 
-            vec4 a = new vec4(0.2f, 0.3f, 0.8f, 1.0f);
-            vec4 b = new vec4(0.5f, 0.2f, 0.1f, 1.0f);
+            int vbo = glGenBuffers();
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, BufferUtils.toFloatBuffer(vertices), GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(0);
 
-            vec4 c = a.multiply(b);
+            mat4 ortho = mat4.orthographic(0.0f, 16.0f, 0.0f, 9.0f, -1.0f, 1.0f);
 
-            mat4 position = mat4.translation(new vec3(2, 3, 4));
-            position.multiply(mat4.identity());
+            Shader shader = new Shader("src/shaders/basic.vert", "src/shaders/basic.frag");
+            shader.enable();
+            shader.setUniformMat4("pr_matrix", ortho);
+            shader.setUniformMat4("ml_matrix", mat4.translation(new vec3(4, 3, 0)));
 
-            position.elements[12] = 2.0f;
-
-            vec4 c0 = position.getColumn(3);
-            System.out.println(position.elements[12]);
-            System.out.println(c0.x);
+            shader.setUniform2f("light_pos", new vec2(4.0f, 1.5f));
+            shader.setUniform4f("colour", new vec4(0.2f, 0.3f, 0.8f, 1.0f));
 
             while (!window.closed()) {
                 window.clear();
 
-//                System.out.println(c);
-
-                glBegin(GL_QUADS);
-                glVertex2f(-0.5f, -0.5f);
-                glVertex2f(-0.5f, 0.5f);
-                glVertex2f(0.5f, 0.5f);
-                glVertex2f(0.5f, -0.5f);
-                glEnd();
-
-                glDrawArrays(GL_ARRAY_BUFFER, 0, 6);
+                Point2D.Float mousePosition = window.getMousePosition();
+                shader.setUniform2f("light_pos", new vec2(mousePosition.x * 16.0f / 960.0f, 9.0f - mousePosition.y * 9.0f / 540.0f));
+                glDrawArrays(GL_TRIANGLES, 0, 6);
 
                 window.update();
             }
@@ -57,5 +63,7 @@ public class Main {
             glfwTerminate();
         }
     }
+
+
 
 }
