@@ -1,7 +1,4 @@
-import graphics.Renderable2D;
-import graphics.Shader;
-import graphics.Simple2DRenderer;
-import graphics.Window;
+import graphics.*;
 import graphics.buffers.Buffer;
 import graphics.buffers.IndexBuffer;
 import graphics.buffers.VertexArray;
@@ -13,6 +10,8 @@ import utils.BufferUtils;
 
 import java.awt.geom.Point2D;
 import java.nio.FloatBuffer;
+import java.util.Random;
+import java.util.Vector;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -33,11 +32,17 @@ public class Main {
             Shader shader = new Shader("src/shaders/basic.vert", "src/shaders/basic.frag");
             shader.enable();
             shader.setUniformMat4("pr_matrix", ortho);
-            shader.setUniformMat4("ml_matrix", mat4.translation(new vec3(4, 3, 0)));
 
-            Renderable2D sprite = new Renderable2D(new vec3(5, 5, 0), new vec2(4, 4), new vec4(1, 0, 1, 1), shader);
-            Renderable2D sprite2 = new Renderable2D(new vec3(7, 1, 0), new vec2(2, 3), new vec4(0.2f, 0, 1, 1), shader);
-            Simple2DRenderer renderer = new Simple2DRenderer();
+            Vector<Renderable2D> sprites = new Vector<>();
+            Random rand = new Random();
+
+            for (float y = 0; y < 9.0f; y += 0.05f) {
+                for (float x = 0; x < 16.0f; x += 0.05f) {
+                    sprites.add(new Sprite(x, y, 0.04f, 0.04f, new vec4(rand.nextFloat(), 0, 1, 1)));
+                }
+            }
+
+            BatchRenderer2D renderer = new BatchRenderer2D();
 
             shader.setUniform2f("light_pos", new vec2(4.0f, 1.5f));
             shader.setUniform4f("colour", new vec4(0.2f, 0.3f, 0.8f, 1.0f));
@@ -48,8 +53,13 @@ public class Main {
                 Point2D.Float mousePosition = window.getMousePosition();
                 shader.setUniform2f("light_pos", new vec2(mousePosition.x * 16.0f / 960.0f, 9.0f - mousePosition.y * 9.0f / 540.0f));
 
-                renderer.submit(sprite);
-                renderer.submit(sprite2);
+                renderer.begin();
+
+                for (int i = 0; i < sprites.size(); i++) {
+                    renderer.submit(sprites.get(i));
+                }
+
+                renderer.end();
                 renderer.flush();
 
                 window.update();

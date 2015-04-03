@@ -8,12 +8,12 @@ public class IndexBuffer {
 
     private int m_BufferID, m_Count;
 
-    public IndexBuffer(short[] data, int count) {
+    public IndexBuffer(int[] data, int count) {
         m_Count = count;
 
         m_BufferID = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_BufferID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BufferUtils.toShortBuffer(data), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BufferUtils.toIntBuffer(data), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 

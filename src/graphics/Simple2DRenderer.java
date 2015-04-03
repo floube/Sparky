@@ -9,25 +9,25 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Simple2DRenderer implements Renderer2D {
 
-    private ArrayDeque<Renderable2D> m_RenderQueue = new ArrayDeque<>();
+    private ArrayDeque<StaticSprite> m_RenderQueue = new ArrayDeque<>();
 
     @Override
     public void submit(Renderable2D renderable) {
-        m_RenderQueue.addLast(renderable);
+        m_RenderQueue.addLast((StaticSprite) renderable);
     }
 
     @Override
     public void flush() {
         while (!m_RenderQueue.isEmpty()) {
-            Renderable2D renderable = m_RenderQueue.getFirst();
-            renderable.getVAO().bind();
-            renderable.getIBO().bind();
+            StaticSprite sprite = m_RenderQueue.getFirst();
+            sprite.getVAO().bind();
+            sprite.getIBO().bind();
 
-            renderable.getShader().setUniformMat4("ml_matrix", mat4.translation(renderable.getPosition()));
-            glDrawElements(GL_TRIANGLES, renderable.getIBO().getCount(), GL_UNSIGNED_SHORT, 0);
+            sprite.getShader().setUniformMat4("ml_matrix", mat4.translation(sprite.getPosition()));
+            glDrawElements(GL_TRIANGLES, sprite.getIBO().getCount(), GL_UNSIGNED_INT, 0);
 
-            renderable.getIBO().unbind();
-            renderable.getVAO().unbind();
+            sprite.getIBO().unbind();
+            sprite.getVAO().unbind();
 
             m_RenderQueue.removeFirst();
         }
