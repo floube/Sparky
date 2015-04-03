@@ -1,4 +1,6 @@
 import graphics.Window;
+import maths.mat4;
+import maths.vec3;
 import maths.vec4;
 
 import java.awt.geom.Point2D;
@@ -24,10 +26,19 @@ public class Main {
 
             vec4 c = a.multiply(b);
 
+            mat4 position = mat4.translation(new vec3(2, 3, 4));
+            position.multiply(mat4.identity());
+
+            position.elements[12] = 2.0f;
+
+            vec4 c0 = position.getColumn(3);
+            System.out.println(position.elements[12]);
+            System.out.println(c0.x);
+
             while (!window.closed()) {
                 window.clear();
 
-                System.out.println(c);
+//                System.out.println(c);
 
                 glBegin(GL_QUADS);
                 glVertex2f(-0.5f, -0.5f);
