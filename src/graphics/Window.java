@@ -113,6 +113,11 @@ public class Window {
     }
 
     public void update() {
+        int error = glGetError();
+        if (error != GL_NO_ERROR) {
+            System.out.println("OpenGL Error: " + error);
+        }
+
         glfwPollEvents();
         glfwSwapBuffers(m_Window);
     }
