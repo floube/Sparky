@@ -40,6 +40,8 @@ public class Main {
 
                 window.update();
             }
+
+            window.destroy();
         } finally {
             glfwTerminate();
         }

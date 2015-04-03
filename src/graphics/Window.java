@@ -18,6 +18,11 @@ public class Window {
     private final static int MAX_KEYS = 1024;
     private final static int MAX_BUTTONS = 32;
 
+    private static GLFWWindowSizeCallback windowSizeCallback;
+    private static GLFWKeyCallback keyCallback;
+    private static GLFWMouseButtonCallback mouseButtonCallback;
+    private static GLFWCursorPosCallback cursorPosCallback;
+
     private String m_Title;
     private int m_Width, m_Height;
     private long m_Window;
@@ -49,25 +54,25 @@ public class Window {
         }
 
         glfwMakeContextCurrent(m_Window);
-        glfwSetWindowSizeCallback(m_Window, new GLFWWindowSizeCallback() {
+        glfwSetWindowSizeCallback(m_Window, windowSizeCallback = new GLFWWindowSizeCallback() {
             @Override
             public void invoke(long window, int width, int height) {
                 glViewport(0, 0, width, height);
             }
         });
-        glfwSetKeyCallback(m_Window, new GLFWKeyCallback() {
+        glfwSetKeyCallback(m_Window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 m_Keys[key] = (action != GLFW_RELEASE);
             }
         });
-        glfwSetMouseButtonCallback(m_Window, new GLFWMouseButtonCallback() {
+        glfwSetMouseButtonCallback(m_Window, mouseButtonCallback = new GLFWMouseButtonCallback() {
             @Override
             public void invoke(long window, int button, int action, int mods) {
                 m_MouseButtons[button] = (action != GLFW_RELEASE);
             }
         });
-        glfwSetCursorPosCallback(m_Window, new GLFWCursorPosCallback() {
+        glfwSetCursorPosCallback(m_Window, cursorPosCallback = new GLFWCursorPosCallback() {
             @Override
             public void invoke(long window, double xpos, double ypos) {
                 mx = (float)xpos;
@@ -110,6 +115,15 @@ public class Window {
     public void update() {
         glfwPollEvents();
         glfwSwapBuffers(m_Window);
+    }
+
+    public void destroy() {
+        windowSizeCallback.release();
+        keyCallback.release();
+        mouseButtonCallback.release();
+        cursorPosCallback.release();
+
+        glfwDestroyWindow(m_Window);
     }
 
     public boolean closed() {
