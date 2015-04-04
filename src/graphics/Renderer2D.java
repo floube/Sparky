@@ -1,9 +1,12 @@
 package graphics;
 
-public interface Renderer2D {
+public abstract class Renderer2D {
 
-    public void dispose();
-    public void submit(Renderable2D renderable);
-    public void flush();
+    public abstract void dispose();
+
+    public void begin() { }
+    public abstract void submit(Renderable2D renderable);
+    public void end() { }
+    public abstract void flush();
 
 }

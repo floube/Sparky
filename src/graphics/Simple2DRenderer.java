@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Simple2DRenderer implements Renderer2D {
+public class Simple2DRenderer extends Renderer2D {
 
     private ArrayDeque<StaticSprite> m_RenderQueue = new ArrayDeque<>();
 

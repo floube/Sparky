@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class BatchRenderer2D implements Renderer2D {
+public class BatchRenderer2D extends Renderer2D {
 
     public final static int RENDERER_MAX_SPRITES    = 60000;
     public final static int RENDERER_VERTEX_SIZE    = (3 * 4) + (1 * 4);
@@ -76,6 +76,7 @@ public class BatchRenderer2D implements Renderer2D {
         glBindVertexArray(0);
     }
 
+    @Override
     public void begin() {
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         m_Buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY).asFloatBuffer();
@@ -109,6 +110,7 @@ public class BatchRenderer2D implements Renderer2D {
         m_IndexCount += 6;
     }
 
+    @Override
     public void end() {
         glUnmapBuffer(GL_ARRAY_BUFFER);
         glBindBuffer(GL_ARRAY_BUFFER, 0);

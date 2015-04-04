@@ -16,6 +16,10 @@ public class Renderable2D {
         m_Color = color;
     }
 
+    public void dispose() {
+
+    }
+
     public vec3 getPosition() {
         return m_Position;
     }
