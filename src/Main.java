@@ -1,3 +1,4 @@
+import de.matthiasmann.twl.utils.PNGDecoder;
 import graphics.Shader;
 import graphics.Sprite;
 import graphics.Window;
@@ -9,13 +10,18 @@ import maths.vec3;
 import maths.vec4;
 
 import java.awt.geom.Point2D;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         try {
             Window window = new Window("Sparky: Java Edition!", 960, 540);
 //            glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
@@ -87,5 +93,34 @@ public class Main {
         }
     }
 
+    public static void main(String[] args) {
+        String filename = "test.png";
+
+        try {
+            InputStream input = new FileInputStream(filename);
+            PNGDecoder decoder = new PNGDecoder(input);
+
+            int width = decoder.getWidth();
+            int height = decoder.getHeight();
+
+            ByteBuffer buffer = ByteBuffer.allocateDirect(4 * width * height);
+            decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+            buffer.flip();
+
+            input.close();
+
+            while (buffer.hasRemaining()) {
+                for (int i = 0; i < 4; i++) {
+                    System.out.printf("%4d", buffer.get() & 255);
+                }
+
+                System.out.println();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
