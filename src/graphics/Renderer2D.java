@@ -11,18 +11,19 @@ public abstract class Renderer2D {
 
     protected Renderer2D() {
         m_TransformationStack.addLast(mat4.identity());
-        m_TransformationBack = m_TransformationStack.getLast();
+        m_TransformationBack = m_TransformationStack.getLast().clone();
     }
 
     public abstract void dispose();
 
     public void push(mat4 matrix) {
         m_TransformationStack.addLast(m_TransformationBack.multiply(matrix));
+        m_TransformationBack = m_TransformationStack.getLast().clone();
     }
 
     public void pushOverride(mat4 matrix) {
         m_TransformationStack.addLast(matrix);
-        m_TransformationBack = matrix;
+        m_TransformationBack = matrix.clone();
     }
 
     public void pop() {
@@ -31,7 +32,7 @@ public abstract class Renderer2D {
             m_TransformationStack.removeLast();
         }
 
-        m_TransformationBack = m_TransformationStack.getLast();
+        m_TransformationBack = m_TransformationStack.getLast().clone();
     }
 
     public void begin() { }

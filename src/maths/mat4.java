@@ -4,13 +4,18 @@ import utils.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-public class mat4 {
+public class mat4 implements Cloneable {
 
     public float[] elements = new float[4 * 4];
+    public vec4[] columns = new vec4[4];
 
     public mat4() {
         for (int i = 0; i < elements.length; i++) {
             elements[i] = 0.0f;
+        }
+
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = new vec4(0.0f, 0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -19,10 +24,19 @@ public class mat4 {
             elements[i] = 0.0f;
         }
 
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = new vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        }
+
         elements[0 + 0 * 4] = diagonal;
         elements[1 + 1 * 4] = diagonal;
         elements[2 + 2 * 4] = diagonal;
         elements[3 + 3 * 4] = diagonal;
+
+        columns[0].x = diagonal;
+        columns[1].y = diagonal;
+        columns[2].z = diagonal;
+        columns[3].w = diagonal;
     }
 
     public mat4 multiply(mat4 other) {
@@ -42,29 +56,26 @@ public class mat4 {
             elements[i] = data[i];
         }
 
+        copyColumnElements();
+
         return this;
     }
 
     public vec3 multiply(vec3 other) {
         return new vec3(
-                getColumn(0).x * other.x + getColumn(1).x * other.y + getColumn(2).x * other.z + getColumn(3).x,
-                getColumn(0).y * other.x + getColumn(1).y * other.y + getColumn(2).y * other.z + getColumn(3).y,
-                getColumn(0).z * other.x + getColumn(1).z * other.y + getColumn(2).z * other.z + getColumn(3).z
+                columns[0].x * other.x + columns[1].x * other.y + columns[2].x * other.z + columns[3].x,
+                columns[0].y * other.x + columns[1].y * other.y + columns[2].y * other.z + columns[3].y,
+                columns[0].z * other.x + columns[1].z * other.y + columns[2].z * other.z + columns[3].z
         );
     }
 
     public vec4 multiply(vec4 other) {
         return new vec4(
-                getColumn(0).x * other.x + getColumn(1).x * other.y + getColumn(2).x * other.z + getColumn(3).x * other.w,
-                getColumn(0).y * other.x + getColumn(1).y * other.y + getColumn(2).y * other.z + getColumn(3).y * other.w,
-                getColumn(0).z * other.x + getColumn(1).z * other.y + getColumn(2).z * other.z + getColumn(3).z * other.w,
-                getColumn(0).w * other.x + getColumn(1).w * other.y + getColumn(2).w * other.z + getColumn(3).w * other.w
+                columns[0].x * other.x + columns[1].x * other.y + columns[2].x * other.z + columns[3].x * other.w,
+                columns[0].y * other.x + columns[1].y * other.y + columns[2].y * other.z + columns[3].y * other.w,
+                columns[0].z * other.x + columns[1].z * other.y + columns[2].z * other.z + columns[3].z * other.w,
+                columns[0].w * other.x + columns[1].w * other.y + columns[2].w * other.z + columns[3].w * other.w
         );
-    }
-
-    public vec4 getColumn(int index) {
-        index *= 4;
-        return new vec4(elements[index], elements[index + 1], elements[index + 2], elements[index + 3]);
     }
 
     public FloatBuffer getBuffer() {
@@ -88,6 +99,8 @@ public class mat4 {
         result.elements[1 + 3 * 4] = (bottom + top) / (bottom - top);
         result.elements[2 + 3 * 4] = (far + near) / (far - near);
 
+        result.copyColumnElements();
+
         return result;
     }
 
@@ -106,6 +119,8 @@ public class mat4 {
         result.elements[3 + 2 * 4] = -1.0f;
         result.elements[2 + 3 * 4] = c;
 
+        result.copyColumnElements();
+
         return result;
     }
 
@@ -115,6 +130,8 @@ public class mat4 {
         result.elements[0 + 3 * 4] = translation.x;
         result.elements[1 + 3 * 4] = translation.y;
         result.elements[2 + 3 * 4] = translation.z;
+
+        result.copyColumnElements();
 
         return result;
     }
@@ -143,6 +160,8 @@ public class mat4 {
         result.elements[1 + 2 * 4] = y * z * omc - x * s;
         result.elements[2 + 2 * 4] = z * omc + c;
 
+        result.copyColumnElements();
+
         return result;
     }
 
@@ -152,6 +171,52 @@ public class mat4 {
         result.elements[0 + 0 * 4] = scale.x;
         result.elements[1 + 1 * 4] = scale.y;
         result.elements[2 + 2 * 4] = scale.z;
+
+        result.copyColumnElements();
+
+        return result;
+    }
+
+    private void copyColumnElements() {
+        columns[0].x = elements[0];
+        columns[0].y = elements[1];
+        columns[0].z = elements[2];
+        columns[0].w = elements[3];
+
+        columns[1].x = elements[4];
+        columns[1].y = elements[5];
+        columns[1].z = elements[6];
+        columns[1].w = elements[7];
+
+        columns[2].x = elements[8];
+        columns[2].y = elements[9];
+        columns[2].z = elements[10];
+        columns[2].w = elements[11];
+
+        columns[3].x = elements[12];
+        columns[3].y = elements[13];
+        columns[3].z = elements[14];
+        columns[3].w = elements[15];
+    }
+
+    public void setElement(int index, float value) {
+        elements[index] = value;
+        copyColumnElements();
+    }
+
+    public void setElement(int row, int column, float value) {
+        setElement(row + column * 4, value);
+    }
+
+    @Override
+    public mat4 clone() {
+        mat4 result = new mat4();
+
+        for (int i = 0; i < elements.length; i++) {
+            result.elements[i] = elements[i];
+        }
+
+        result.copyColumnElements();
 
         return result;
     }

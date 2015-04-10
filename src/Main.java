@@ -1,9 +1,11 @@
 import graphics.Shader;
 import graphics.Sprite;
 import graphics.Window;
+import graphics.layers.Group;
 import graphics.layers.TileLayer;
 import maths.mat4;
 import maths.vec2;
+import maths.vec3;
 import maths.vec4;
 
 import java.awt.geom.Point2D;
@@ -34,9 +36,15 @@ public class Main {
 //                }
 //            }
 
-            Sprite button = new Sprite(-15.0f, 5.0f, 6, 3, new vec4(1, 1, 1, 1));
-            layer.add(button);
-            layer.add(new Sprite(0.5f, 0.5f, 5.0f, 2.0f, new vec4(1, 0, 1, 1)));
+            Group group = new Group(mat4.translation(new vec3(-15.0f, 5.0f, 0.0f)));
+            group.add(new Sprite(0, 0, 6, 3, new vec4(1, 1, 1, 1)));
+
+            Group button = new Group(mat4.translation(new vec3(0.5f, 0.5f, 0.0f)));
+            button.add(new Sprite(0, 0, 5.0f, 2.0f, new vec4(1, 0, 1, 1)));
+            button.add(new Sprite(0.5f, 0.5f, 3.0f, 1.0f, new vec4(0.2f, 0.3f, 0.8f, 1)));
+            group.add(button);
+
+            layer.add(group);
 
             TileLayer layer2 = new TileLayer(shader2);
             layer2.add(new Sprite(-2, -2, 4, 4, new vec4(1, 0, 1, 1)));

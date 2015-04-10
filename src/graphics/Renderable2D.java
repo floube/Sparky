@@ -10,6 +10,10 @@ public class Renderable2D {
     protected vec2 m_Size;
     protected vec4 m_Color;
 
+    protected Renderable2D() {
+
+    }
+
     public Renderable2D(vec3 position, vec2 size, vec4 color) {
         m_Position = position;
         m_Size = size;
@@ -18,6 +22,10 @@ public class Renderable2D {
 
     public void dispose() {
 
+    }
+
+    public void submit(Renderer2D renderer) {
+        renderer.submit(this);
     }
 
     public vec3 getPosition() {
