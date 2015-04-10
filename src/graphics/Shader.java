@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
 
-    private int m_ShaderID;
+    public int m_ShaderID;
     private String m_VertPath, m_FragPath;
 
     public Shader(String vertPath, String fragPath) {
