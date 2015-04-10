@@ -84,7 +84,7 @@ public class BatchRenderer2D extends Renderer2D {
 
     @Override
     public void submit(Renderable2D renderable) {
-        vec3 position = renderable.getPosition();
+        vec3 position = m_TransformationBack.multiply(renderable.getPosition());
         vec2 size = renderable.getSize();
         vec4 color = renderable.getColor();
 

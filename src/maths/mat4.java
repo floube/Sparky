@@ -45,6 +45,23 @@ public class mat4 {
         return this;
     }
 
+    public vec3 multiply(vec3 other) {
+        return new vec3(
+                getColumn(0).x * other.x + getColumn(1).x * other.y + getColumn(2).x * other.z + getColumn(3).x,
+                getColumn(0).y * other.x + getColumn(1).y * other.y + getColumn(2).y * other.z + getColumn(3).y,
+                getColumn(0).z * other.x + getColumn(1).z * other.y + getColumn(2).z * other.z + getColumn(3).z
+        );
+    }
+
+    public vec4 multiply(vec4 other) {
+        return new vec4(
+                getColumn(0).x * other.x + getColumn(1).x * other.y + getColumn(2).x * other.z + getColumn(3).x * other.w,
+                getColumn(0).y * other.x + getColumn(1).y * other.y + getColumn(2).y * other.z + getColumn(3).y * other.w,
+                getColumn(0).z * other.x + getColumn(1).z * other.y + getColumn(2).z * other.z + getColumn(3).z * other.w,
+                getColumn(0).w * other.x + getColumn(1).w * other.y + getColumn(2).w * other.z + getColumn(3).w * other.w
+        );
+    }
+
     public vec4 getColumn(int index) {
         index *= 4;
         return new vec4(elements[index], elements[index + 1], elements[index + 2], elements[index + 3]);
