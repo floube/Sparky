@@ -43,7 +43,7 @@ public class ImageUtils {
             int height = decoder.getHeight();
 
             ByteBuffer buffer = ByteBuffer.allocateDirect(4 * width * height);
-            decoder.decodeFlipped(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+            decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             buffer.flip();
 
             input.close();

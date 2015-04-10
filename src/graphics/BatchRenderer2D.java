@@ -6,25 +6,29 @@ import maths.vec3;
 import maths.vec4;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class BatchRenderer2D extends Renderer2D {
 
+    public final static int SHADER_VERTEX_INDEX     = 0;
+    public final static int SHADER_UV_INDEX         = 1;
+    public final static int SHADER_COLOR_INDEX      = 2;
+
+    public final static int SHADER_VERTEX_SIZE      = (3 * 4);
+    public final static int SHADER_UV_SIZE          = (2 * 4);
+    public final static int SHADER_COLOR_SIZE       = (1 * 4);
+
     public final static int RENDERER_MAX_SPRITES    = 60000;
-    public final static int RENDERER_VERTEX_SIZE    = (3 * 4) + (1 * 4);
+    public final static int RENDERER_VERTEX_SIZE    = SHADER_VERTEX_SIZE + SHADER_UV_SIZE + SHADER_COLOR_SIZE;
     public final static int RENDERER_SPRITE_SIZE    = RENDERER_VERTEX_SIZE * 4;
     public final static int RENDERER_BUFFER_SIZE    = RENDERER_SPRITE_SIZE * RENDERER_MAX_SPRITES;
     public final static int RENDERER_INDICES_SIZE   = RENDERER_MAX_SPRITES * 6;
-
-    public final static int SHADER_VERTEX_INDEX     = 0;
-    public final static int SHADER_COLOR_INDEX      = 1;
 
     private int m_VAO;
     private int m_VBO;
@@ -50,10 +54,15 @@ public class BatchRenderer2D extends Renderer2D {
         glBindVertexArray(m_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferData(GL_ARRAY_BUFFER, RENDERER_BUFFER_SIZE, GL_DYNAMIC_DRAW);
+
         glEnableVertexAttribArray(SHADER_VERTEX_INDEX);
+        glEnableVertexAttribArray(SHADER_UV_INDEX);
         glEnableVertexAttribArray(SHADER_COLOR_INDEX);
+
         glVertexAttribPointer(SHADER_VERTEX_INDEX, 3, GL_FLOAT, false, RENDERER_VERTEX_SIZE, 0);
-        glVertexAttribPointer(SHADER_COLOR_INDEX, 4, GL_UNSIGNED_BYTE, true, RENDERER_VERTEX_SIZE, 3 * 4);
+        glVertexAttribPointer(SHADER_UV_INDEX, 2, GL_FLOAT, false, RENDERER_VERTEX_SIZE, SHADER_VERTEX_SIZE);
+        glVertexAttribPointer(SHADER_COLOR_INDEX, 4, GL_UNSIGNED_BYTE, true, RENDERER_VERTEX_SIZE, SHADER_VERTEX_SIZE + SHADER_UV_SIZE);
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         int[] indices = new int[RENDERER_INDICES_SIZE];
@@ -87,6 +96,7 @@ public class BatchRenderer2D extends Renderer2D {
         vec3 position = m_TransformationBack.multiply(renderable.getPosition());
         vec2 size = renderable.getSize();
         vec4 color = renderable.getColor();
+        List<vec2> uv = renderable.getUV();
 
         int r = (int) (color.x * 255);
         int g = (int) (color.y * 255);
@@ -96,15 +106,19 @@ public class BatchRenderer2D extends Renderer2D {
         float c = Float.intBitsToFloat((r << 0) | (g << 8) | (b << 16) | (a << 24));
 
         m_Buffer.put(position.x).put(position.y).put(position.z);
+        m_Buffer.put(uv.get(0).x).put(uv.get(0).y);
         m_Buffer.put(c);
 
         m_Buffer.put(position.x).put(position.y + size.y).put(position.z);
+        m_Buffer.put(uv.get(1).x).put(uv.get(1).y);
         m_Buffer.put(c);
 
         m_Buffer.put(position.x + size.x).put(position.y + size.y).put(position.z);
+        m_Buffer.put(uv.get(2).x).put(uv.get(2).y);
         m_Buffer.put(c);
 
         m_Buffer.put(position.x + size.x).put(position.y).put(position.z);
+        m_Buffer.put(uv.get(3).x).put(uv.get(3).y);
         m_Buffer.put(c);
 
         m_IndexCount += 6;
